@@ -627,11 +627,18 @@ fn generate_mcp_tools(spec: &Value) -> Result<String> {
 // ─── Utilities ───────────────────────────────────────────────────────────────
 
 fn to_snake_case(camel: &str) -> String {
-    camel
-        .chars()
+    let chars: Vec<char> = camel.chars().collect();
+    chars
+        .iter()
         .enumerate()
-        .fold(String::new(), |mut acc, (i, c)| {
-            if i > 0 && c.is_uppercase() && !acc.ends_with('_') {
+        .fold(String::new(), |mut acc, (i, &c)| {
+            if c.is_whitespace() || c == '_' || c == '-' {
+                if !acc.is_empty() && !acc.ends_with('_') {
+                    acc.push('_');
+                }
+                return acc;
+            }
+            if i > 0 && c.is_uppercase() && !acc.ends_with('_') && !chars[i - 1].is_whitespace() {
                 acc.push('_');
             }
             acc.push(c.to_lowercase().next().unwrap_or(c));
@@ -652,5 +659,10 @@ fn to_rust_name(operation_id: &str) -> String {
             acc.push(c.to_lowercase().next().unwrap_or(c));
             acc
         });
-    snake.trim_matches('_').to_string()
+    let snake = snake.trim_matches('_').to_string();
+    if is_keyword(&snake) {
+        format!("r#{}", snake)
+    } else {
+        snake
+    }
 }
