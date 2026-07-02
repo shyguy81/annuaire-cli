@@ -4,16 +4,32 @@
 
 use serde::{Serialize, Deserialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub struct ActionStatus {
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ActionStatus {
+    Todo,
+    InProgress,
+    Completed,
+    Cancelled,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub struct ActionType {
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ActionType {
+    Followup,
+    Relance,
+    Candidature,
+    Email,
+    Call,
+    Meeting,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub struct BusinessPotential {
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum BusinessPotential {
+    Low,
+    Medium,
+    High,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -100,16 +116,31 @@ pub struct InteractionResponse {
     pub updated_at: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub struct InteractionType {
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum InteractionType {
+    Call,
+    Email,
+    Meeting,
+    Message,
+    Other,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub struct Priority {
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Priority {
+    Low,
+    Medium,
+    High,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub struct ProximityLevel {
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ProximityLevel {
+    Cold,
+    Warm,
+    Active,
+    Close,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -182,8 +213,15 @@ pub struct RelationshipProfileUpdate {
     pub trust_level: Option<i64>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
-pub struct RelationshipType {
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum RelationshipType {
+    Spouse,
+    Family,
+    Business,
+    Mentor,
+    Friend,
+    Acquaintance,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

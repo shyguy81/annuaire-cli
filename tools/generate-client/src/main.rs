@@ -223,13 +223,55 @@ fn generate_types(spec: &Value) -> Result<String> {
 
         for name in schema_names {
             if let Some(schema) = schemas.get(name) {
-                output.push_str(&generate_struct(name, schema, &circular)?);
+                if let Some(values) = string_enum_values(schema) {
+                    output.push_str(&generate_enum(name, &values));
+                } else {
+                    output.push_str(&generate_struct(name, schema, &circular)?);
+                }
                 output.push('\n');
             }
         }
     }
 
     Ok(output)
+}
+
+fn string_enum_values(schema: &Value) -> Option<Vec<String>> {
+    if schema.get("type").and_then(|t| t.as_str()) != Some("string") {
+        return None;
+    }
+    let values = schema.get("enum")?.as_array()?;
+    let values: Vec<String> = values.iter().filter_map(|v| v.as_str().map(str::to_string)).collect();
+    if values.is_empty() {
+        None
+    } else {
+        Some(values)
+    }
+}
+
+fn to_pascal_case(snake: &str) -> String {
+    snake
+        .split('_')
+        .map(|word| {
+            let mut chars = word.chars();
+            match chars.next() {
+                Some(first) => first.to_uppercase().collect::<String>() + chars.as_str(),
+                None => String::new(),
+            }
+        })
+        .collect()
+}
+
+fn generate_enum(name: &str, values: &[String]) -> String {
+    let mut output = String::new();
+    output.push_str("#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]\n");
+    output.push_str("#[serde(rename_all = \"snake_case\")]\n");
+    output.push_str(&format!("pub enum {} {{\n", name));
+    for value in values {
+        output.push_str(&format!("    {},\n", to_pascal_case(value)));
+    }
+    output.push_str("}\n");
+    output
 }
 
 fn generate_struct(name: &str, schema: &Value, circular: &HashSet<String>) -> Result<String> {
