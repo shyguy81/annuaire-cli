@@ -43,5 +43,16 @@ echo ""
 echo "📊 Vérification:"
 echo "  annuaire-cli: $(which annuaire-cli)"
 echo ""
+
+EXPECTED_VERSION="$(cat "$WORKSPACE_ROOT/VERSION")"
+INSTALLED_VERSION="$("$LOCAL_BIN/annuaire-cli" --version | awk '{print $2}')"
+
+if [ "$INSTALLED_VERSION" != "$EXPECTED_VERSION" ]; then
+    echo "❌ Version installée ($INSTALLED_VERSION) ≠ VERSION ($EXPECTED_VERSION)"
+    exit 1
+fi
+echo "✅ Version vérifiée: $INSTALLED_VERSION"
+echo ""
+
 echo "🚀 Commandes disponibles:"
 annuaire-cli --help | head -5
