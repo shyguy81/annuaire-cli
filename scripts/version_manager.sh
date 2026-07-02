@@ -2,7 +2,6 @@
 
 VERSION_FILE="VERSION"
 CARGO_FILES=("Cargo.toml" "shared/Cargo.toml" "tools/generate-client/Cargo.toml")
-RUST_SOURCE_FILES=("src/main.rs")
 
 # Fonctions utilitaires
 read_version() {
@@ -39,32 +38,9 @@ update_cargo_versions() {
     fi
 }
 
-update_rust_source_versions() {
-    local new_version="$1"
-    local updated_count=0
-    
-    for rust_file in "${RUST_SOURCE_FILES[@]}"; do
-        if [[ -f "$rust_file" ]]; then
-            # Remplace deux formats en une seule passe:
-            # 1. #[command(version = "...")] — Rust attribute
-            # 2. "version": "..." — JSON dans le code
-            sed -i.bak "s/version = \"[^\"]*\"/version = \"${new_version}\"/g;s/\"version\": \"[^\"]*\"/\"version\": \"${new_version}\"/g" "$rust_file"
-            
-            rm -f "${rust_file}.bak"
-            updated_count=$((updated_count + 1))
-            echo "✓ $rust_file mis à jour avec la version: $new_version"
-        fi
-    done
-    
-    if [[ $updated_count -gt 0 ]]; then
-        echo "✓ $updated_count fichier(s) source Rust mis à jour"
-    fi
-}
-
 write_version() {
     echo "$1" > "$VERSION_FILE"
     update_cargo_versions "$1"
-    update_rust_source_versions "$1"
     echo "✓ Version mise à jour: $1"
 }
 
@@ -182,7 +158,6 @@ case "$1" in
     "sync")
         current_version=$(read_version)
         update_cargo_versions "$current_version"
-        update_rust_source_versions "$current_version"
         echo "✓ Synchronisation terminée avec la version: $current_version"
         ;;
     "tag")
