@@ -1,7 +1,7 @@
 #!/bin/bash
 
 VERSION_FILE="VERSION"
-CARGO_FILES=("Cargo.toml" "shared/Cargo.toml" "tools/generate-client/Cargo.toml")
+CARGO_FILES=("Cargo.toml" "shared/Cargo.toml")
 
 # Fonctions utilitaires
 read_version() {
