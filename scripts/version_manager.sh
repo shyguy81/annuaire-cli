@@ -113,6 +113,21 @@ create_tag() {
         return 1
     fi
 
+    # Vérifie qu'il n'y a aucun changement non-committé
+    if [[ -n "$(git status --porcelain)" ]]; then
+        echo "Erreur: changements non-committés détectés. Commit d'abord."
+        return 1
+    fi
+
+    # Vérifie qu'il n'y a aucun commit local en attente de push
+    git fetch origin >/dev/null 2>&1
+    local branch
+    branch=$(git rev-parse --abbrev-ref HEAD)
+    if [[ -n "$(git log "origin/${branch}..HEAD" --oneline 2>/dev/null)" ]]; then
+        echo "Erreur: commits en attente de push vers origin/${branch}. Push d'abord."
+        return 1
+    fi
+
     # Crée le tag local
     git tag "$tag_name"
     if [[ $? -ne 0 ]]; then
